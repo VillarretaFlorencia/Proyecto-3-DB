@@ -107,4 +107,6 @@ public interface ModeloInspector extends Modelo {
 													UbicacionBean ubicacion, 
 													InspectorBean inspectorLogueado) throws InspectorNoHabilitadoEnUbicacionException, Exception;
 
+
 }
+

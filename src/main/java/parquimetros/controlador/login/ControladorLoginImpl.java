@@ -90,6 +90,12 @@ public class ControladorLoginImpl implements ControladorLogin {
 					logger.info(Mensajes.getMessage("ControladorLoginImpl.ingresarComoInspector.eliminarVentana"));					
 					this.ventana.eliminarVentana();
 
+					/*int leg = Integer.parseInt(usuario.getUsername());
+
+					if (modeloInspector.verificarInspector(leg, usuario.getPassword())){
+						//decir a la vista que muestre el carte de inspector incorrecto y limpie los campos
+					}*/
+										
 				} catch (InspectorNoAutenticadoException e) {
 
 					logger.error(Mensajes.getMessage("ControladorLoginImpl.ingresarComoInspector.InspectorNoAutenticadoException"));

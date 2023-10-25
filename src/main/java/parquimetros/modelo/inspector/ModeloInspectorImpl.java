@@ -14,8 +14,11 @@ import org.slf4j.LoggerFactory;
 
 import parquimetros.modelo.ModeloImpl;
 import parquimetros.modelo.beans.InspectorBean;
+import parquimetros.modelo.beans.InspectorBeanImpl;
 import parquimetros.modelo.beans.ParquimetroBean;
+import parquimetros.modelo.beans.ParquimetroBeanImpl;
 import parquimetros.modelo.beans.UbicacionBean;
+import parquimetros.modelo.beans.UbicacionBeanImpl;
 import parquimetros.modelo.inspector.dao.DAOParquimetro;
 import parquimetros.modelo.inspector.dao.DAOParquimetroImpl;
 import parquimetros.modelo.inspector.dao.DAOInspector;
@@ -58,7 +61,7 @@ public class ModeloInspectorImpl extends ModeloImpl implements ModeloInspector {
 		
 		logger.info(Mensajes.getMessage("ModeloInspectorImpl.recuperarUbicaciones.logger"));
 		/** 
-		 * TODO Debe retornar una lista de UbicacionesBean con todas las ubicaciones almacenadas en la B.D. 
+		 * HECHO Debe retornar una lista de UbicacionesBean con todas las ubicaciones almacenadas en la B.D. 
 		 *      Debería propagar una excepción si hay algún error en la consulta. 
 		 *      
 		 *      Importante: Para acceder a la B.D. utilice la propiedad this.conexion (de clase Connection) 
@@ -66,15 +69,20 @@ public class ModeloInspectorImpl extends ModeloImpl implements ModeloInspector {
 		 *      
 		 */
 		ArrayList<UbicacionBean> ubicaciones = new ArrayList<UbicacionBean>();
+		java.sql.Statement stmt = conexion.createStatement();
+ 	
+		String sql = "SELECT calle, altura, tarifa " + "FROM Ubicaciones ";
+			
+		ResultSet res = stmt.executeQuery(sql);
 
-		// Datos estáticos de prueba. Quitar y reemplazar por código que recupera las ubicaciones de la B.D. en una lista de UbicacionesBean		 
-		DAOUbicacionesDatosPrueba.poblar();
-		
-		for (UbicacionBean ubicacion : DAOUbicacionesDatosPrueba.datos.values()) {
-			ubicaciones.add(ubicacion);	
+		if(res.next()) {
+			UbicacionBean ubi = new UbicacionBeanImpl();
+			ubi.setCalle(res.getString("calle"));
+			ubi.setAltura(res.getInt("altura"));
+			ubi.setTarifa(res.getDouble("tarifa"));
+			ubicaciones.add(ubi);
 		}
-		// Fin datos estáticos de prueba.
-	
+		
 		return ubicaciones;
 	}
 
@@ -84,7 +92,7 @@ public class ModeloInspectorImpl extends ModeloImpl implements ModeloInspector {
 		logger.info(Mensajes.getMessage("ModeloInspectorImpl.recuperarParquimetros.logger"),ubicacion.toString());
 		
 		/** 
-		 * TODO Debe retornar una lista de ParquimetroBean con todos los parquimetros que corresponden a una ubicación.
+		 * HECHO Debe retornar una lista de ParquimetroBean con todos los parquimetros que corresponden a una ubicación.
 		 * 		Debería propagar una excepción si hay algún error en la consulta.
 		 *            
 		 *      Importante: Para acceder a la B.D. utilice la propiedad this.conexion (de clase Connection) 
@@ -93,15 +101,18 @@ public class ModeloInspectorImpl extends ModeloImpl implements ModeloInspector {
 		 */
 
 		ArrayList<ParquimetroBean> parquimetros = new ArrayList<ParquimetroBean>();
-
-		// Datos estáticos de prueba. Quitar y reemplazar por código que recupera los parquimetros de la B.D. en una lista de ParquimetroBean
-		DAOParquimetrosDatosPrueba.poblar(ubicacion);
+		java.sql.Statement stmt = conexion.createStatement();
+		String sql = "SELECT  numero, id_parq, calle, altura" + "FROM Parquimetro"
+					+ "WHERE calle = " + ubicacion.getCalle() + "AND altura = " + ubicacion.getAltura() + "; "  ;
 		
-		for (ParquimetroBean parquimetro : DAOParquimetrosDatosPrueba.datos.values()) {
-			parquimetros.add(parquimetro);	
+		ResultSet res = stmt.executeQuery(sql);
+
+		if(res.next()) {
+			ParquimetroBean parquimetro = new ParquimetroBeanImpl();
+			parquimetro.setNumero(res.getInt("numero"));
+			parquimetro.setId(res.getInt("id_parq"));
+			parquimetro.setUbicacion(ubicacion);
 		}
-		// Fin datos estáticos de prueba.
-	
 		return parquimetros;
 	}
 
@@ -252,4 +263,5 @@ public class ModeloInspectorImpl extends ModeloImpl implements ModeloInspector {
 		// Fin datos prueba
 		return multas;		
 	}
+
 }
